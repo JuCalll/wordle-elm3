@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordle en Elm</title>
+    <style>
+        html, body { margin: 0; padding: 0; background: #121213; }
+    </style>
+</head>
+<body>
+<!-- Aquí se monta la aplicación de Elm -->
+<div id="app"></div>
+
+<!-- El JavaScript que genera el compilador -->
+<script src="elm.js"></script>
+
+<script>
+    var CLAVE = "wordle-elm-estadisticas";
+
+    // Se leen las estadísticas guardadas antes de arrancar Elm.
+    // El try/catch es porque localStorage puede estar bloqueado o el
+    // contenido puede estar corrupto.
+    var guardadas = null;
+    try {
+        var crudo = localStorage.getItem(CLAVE);
+        if (crudo) { guardadas = JSON.parse(crudo); }
+    } catch (e) {
+        guardadas = null;
+    }
+
+    // Arranca la aplicación, pasándole los datos como "flags".
+    var app = Elm.Main.init({
+        node: document.getElementById("app"),
+        flags: guardadas
+    });
+
+    // Y aquí está el otro extremo del port.
+    // Elm nunca escribe en localStorage: envía datos por el canal y este
+    // JavaScript decide qué hacer con ellos.
+    app.ports.guardarEstadisticas.subscribe(function (datos) {
+        try {
+            localStorage.setItem(CLAVE, JSON.stringify(datos));
+        } catch (e) {}
+    });
+</script>
+</body>
+</html>
