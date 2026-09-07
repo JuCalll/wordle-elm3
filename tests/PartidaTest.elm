@@ -6,50 +6,27 @@ import Expect
 import Test exposing (Test, describe, test)
 
 
-{-| La palabra objetivo de todas las pruebas.
-
-`Result.withDefault` saca el valor de un Result, y si fue Err usa el
-respaldo. Aquí sabemos que "gatos" es válida, así que nunca se usa.
-
--}
 objetivo : Palabra
 objetivo =
     Palabra.desdeTexto "gatos"
         |> Result.withDefault Palabra.porDefecto
 
 
-{-| Diccionario de prueba que acepta cualquier palabra.
-
-Dos líneas. Esto es lo que ganamos al pasar la función como parámetro:
-podemos probar `Partida` sin construir ningún diccionario real.
-
--}
 todoVale : Palabra -> Bool
 todoVale _ =
     True
 
 
-{-| Diccionario de prueba que no acepta nada. Para probar el rechazo.
--}
 nadaVale : Palabra -> Bool
 nadaVale _ =
     False
 
 
-{-| Escribe un texto letra por letra.
-
-`String.foldl` recorre los caracteres de un texto acumulando un resultado.
-Aquí el acumulado es la partida, y cada carácter la hace avanzar.
-
--}
 escribir : String -> Partida -> Partida
 escribir texto partida =
     String.foldl Partida.escribirLetra partida texto
 
 
-{-| Escribe una palabra y la envía. Si el envío es rechazado, deja la
-partida como estaba.
--}
 jugar : String -> Partida -> Partida
 jugar texto partida =
     escribir texto partida

@@ -6,26 +6,11 @@ module Datos.Diccionario exposing
     , generador
     )
 
-{-| La lista de palabras del juego.
-
-Las palabras se guardan como texto plano en `crudas` y se validan al
-convertirlas en `soluciones`. La prueba `DiccionarioTest` garantiza que
-ninguna entrada se pierda en esa conversión: si alguien agrega una palabra
-con tilde, la prueba falla y avisa.
-
--}
-
 import Dominio.Palabra as Palabra exposing (Palabra)
 import Random
 import Set
 
 
-{-| Texto plano, en minúsculas, sin tildes. La ñ sí está permitida.
-
-La lista se escribe con la coma AL PRINCIPIO de cada línea. Es el estilo
-estándar de Elm y tiene una ventaja práctica: agregar o quitar una línea
-nunca deja una coma huérfana.
--}
 crudas : List String
 crudas =
     [ "abeja", "abril", "acero", "aguja", "aldea", "altar", "amigo"
@@ -118,49 +103,21 @@ crudas =
     ]
 
 
-{-| Solo las entradas que pasaron la validación.
-
-`List.filterMap` hace dos cosas a la vez: transforma cada elemento y
-descarta los que dan `Nothing`.
-`Palabra.desdeTexto >> Result.toMaybe` es la composición de dos funciones:
-primero valida (dando Result), luego convierte ese Result en Maybe.
--}
 soluciones : List Palabra
 soluciones =
     List.filterMap (Palabra.desdeTexto >> Result.toMaybe) crudas
 
 
-{-| ¿Puede esta palabra salir sorteada?
--}
 esSolucion : Palabra -> Bool
 esSolucion palabra =
     Set.member (Palabra.aTexto palabra) conjunto
 
 
-{-| ¿Se acepta como intento del jugador?
-
-Hoy aceptamos cualquier palabra bien formada: cinco letras del alfabeto
-español sin tildes. Es deliberadamente permisivo, porque exigir la lista
-corta haría el juego injugable.
-
-Cuando exista una lista amplia de palabras válidas, se cambia SOLO esta
-función. Ni `Partida` ni `Main` se enteran.
--}
 esAceptada : Palabra -> Bool
 esAceptada _ =
     True
 
 
-{-| Cómo elegir una palabra al azar.
-
-ATENCIÓN: esto NO elige nada. Es un VALOR que describe un sorteo, como una
-receta describe un plato sin cocinarlo. Quien lo ejecuta es el runtime de
-Elm, cuando `Main` se lo entrega envuelto en un `Cmd`.
-
-`Random.uniform` recibe un elemento Y una lista, no una lista sola. ¿Por
-qué? Porque sortear entre cero opciones no tiene respuesta posible: el tipo
-no te deja ni plantear la pregunta.
--}
 generador : Random.Generator Palabra
 generador =
     case soluciones of
@@ -172,11 +129,9 @@ generador =
 
 
 
--- INTERNO
+-- interno
 
 
-{-| Las palabras como conjunto, para que `esSolucion` responda rápido.
--}
 conjunto : Set.Set String
 conjunto =
     Set.fromList crudas

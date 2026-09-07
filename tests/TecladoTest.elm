@@ -7,16 +7,11 @@ import Expect
 import Test exposing (Test, describe, test)
 
 
-{-| Atajo para construir una letra evaluada sin escribir el registro
-completo cada vez.
--}
 letra : Char -> Estado -> LetraEvaluada
 letra caracter estado =
     { letra = caracter, estado = estado }
 
 
-{-| Atajo para consultar el estado de una tecla.
--}
 estadoDe : Char -> List (List LetraEvaluada) -> Maybe Estado
 estadoDe caracter historial =
     Teclado.estados historial
@@ -56,11 +51,6 @@ suite =
                 \_ ->
                     estadoDe 'z' [ [ letra 'g' Correcta ] ]
                         |> Expect.equal Nothing
-
-            -- Los cuatro casos que siguen cubren todas las combinaciones
-            -- que importan, incluyendo el mismo par en orden inverso: así
-            -- comprobamos que la regla depende de la prioridad y no del
-            -- orden de llegada.
             , test "el verde reemplaza al gris de un intento anterior" <|
                 \_ ->
                     estadoDe 'a'

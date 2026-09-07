@@ -1,8 +1,5 @@
 module Vista.Tablero exposing (ver)
 
-{-| La pantalla completa del juego: título, cuadrícula, avisos y teclado.
--}
-
 import Dominio.Estadisticas exposing (Estadisticas)
 import Dominio.Evaluacion exposing (Estado, LetraEvaluada)
 import Dominio.Palabra as Palabra
@@ -48,8 +45,6 @@ ver config =
         , verCuadricula config.partida
         , verMensaje config
         , Vista.TecladoVirtual.ver
-            -- Aquí se calcula el estado del teclado en el momento de
-            -- pintarlo, a partir del historial. No se guarda en ningún lado.
             { estados = Teclado.estados (Partida.intentos config.partida)
             , alPresionarLetra = config.alPresionarLetra
             , alBorrar = config.alBorrar
@@ -59,20 +54,15 @@ ver config =
 
 
 
--- CUADRÍCULA
+-- cuadrícula
 
 
-{-| Las seis filas: las jugadas, la que se está escribiendo, y las vacías.
--}
 verCuadricula : Partida -> Html msg
 verCuadricula partida =
     let
         completadas =
             List.map filaCompletada (Partida.intentos partida)
 
-        -- La fila en edición solo aparece si la partida sigue viva.
-        -- Se usa una lista para poder concatenarla: o tiene un elemento
-        -- o está vacía.
         enCurso =
             if Partida.estado partida == EnCurso then
                 [ filaActual (Partida.actual partida) ]
@@ -80,7 +70,6 @@ verCuadricula partida =
             else
                 []
 
-        -- `List.repeat n x` crea una lista con n copias de x.
         vacias =
             List.repeat (filasVacias partida) filaVacia
     in
@@ -92,8 +81,6 @@ verCuadricula partida =
         (completadas ++ enCurso ++ vacias)
 
 
-{-| Cuántas filas vacías quedan por debajo.
--}
 filasVacias : Partida -> Int
 filasVacias partida =
     let
@@ -107,7 +94,6 @@ filasVacias partida =
             else
                 0
     in
-    -- `max 0` evita un número negativo si algo se descuadra.
     max 0 (Partida.maximoIntentos - usadas - enCurso)
 
 
@@ -116,9 +102,6 @@ filaCompletada evaluadas =
     fila (List.map celdaEvaluada evaluadas)
 
 
-{-| La fila que el jugador está escribiendo: las letras puestas más las
-casillas que faltan.
--}
 filaActual : List Char -> Html msg
 filaActual letras =
     let
@@ -144,8 +127,7 @@ fila celdas =
 
 
 
--- CELDAS
--- Tres variantes que comparten la misma función base.
+-- celdas
 
 
 celdaEvaluada : LetraEvaluada -> Html msg
@@ -185,20 +167,12 @@ celda fondo colorBorde contenido =
 
 
 
--- MENSAJES
+-- mensajes
 
 
-{-| La zona de debajo del tablero cambia según el estado de la partida.
-
-El `case` devuelve una LISTA de elementos, y el compilador exige que las
-tres ramas estén cubiertas.
-
--}
 verMensaje : Config msg -> Html msg
 verMensaje config =
     div
-        -- `min-height` fijo evita que el teclado salte cuando aparece
-        -- o desaparece el mensaje.
         [ style "min-height" "80px"
         , style "margin-top" "16px"
         , style "display" "flex"
@@ -228,12 +202,6 @@ verMensaje config =
         )
 
 
-{-| El aviso solo existe si hay algo que avisar.
-
-`text ""` es un elemento vacío: la forma de "no pintar nada" cuando el
-tipo exige un Html.
-
--}
 verAviso : Maybe String -> Html msg
 verAviso aviso =
     case aviso of

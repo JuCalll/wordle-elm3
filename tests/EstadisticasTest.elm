@@ -23,7 +23,6 @@ suite =
                     e =
                         Estadisticas.registrar (Victoria 3) Estadisticas.vacias
                 in
-                -- Comparamos una tupla de tres valores de una sola vez.
                 ( Estadisticas.jugadas e
                 , Estadisticas.ganadas e
                 , Estadisticas.rachaActual e
@@ -39,8 +38,6 @@ suite =
                     |> Expect.equal ( 1, 0 )
         , test "la derrota corta la racha actual" <|
             \_ ->
-                -- Encadenamos tres partidas con pipes: cada `registrar`
-                -- recibe el resultado del anterior.
                 Estadisticas.vacias
                     |> Estadisticas.registrar (Victoria 2)
                     |> Estadisticas.registrar (Victoria 4)
@@ -66,7 +63,6 @@ suite =
                     |> Expect.equal [ ( 3, 2 ), ( 5, 1 ) ]
         , test "el porcentaje redondea correctamente" <|
             \_ ->
-                -- 1 de 3 es 33.33%, que redondeado da 33.
                 Estadisticas.vacias
                     |> Estadisticas.registrar (Victoria 1)
                     |> Estadisticas.registrar Derrota
